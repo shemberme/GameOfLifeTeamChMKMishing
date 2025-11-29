@@ -48,11 +48,12 @@ int main() {
         }
         draw_cell(array,color_num);
         if(paused) { 
-            mvprintw(0, 0, "=== PAUSED === Press 's' to continue | Current color: %d", color_num);
+            mvprintw(0, 5, "=== PAUSED === Press 's' to continue | Current color: %d", color_num);
         } else {
-            mvprintw(0, 0, "=== RUNNING == Press 's' to pause    | Current color: %d", color_num);
+            mvprintw(0, 5, "=== RUNNING == Press 's' to pause    | Current color: %d", color_num);
         }
-        printw("\n     Speed of simulation --> %i | a+ z-| Space - endgame\n", 21 - speed);
+        mvprintw(1,5,"Arrows up,down --> Change color cell ");
+        mvprintw(2,5,"Speed of simulation --> %i | a+ z-| Space - endgame\n", 21 - speed);
         refresh();
         if(!paused){
             napms(speed * 10);
