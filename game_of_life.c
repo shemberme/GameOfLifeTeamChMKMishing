@@ -7,7 +7,7 @@
 #define HEIGHT 25
 //          Change color cell   поле всегда белого цвета
 
-#define CELL_DRAW "o"
+#define CELL_DRAW "0"
 #define otstup " "
 void init_colors();
 int init_ncurses(void);
@@ -15,9 +15,9 @@ int row_mass(const int *array[], int j);
 void zero_pole(int array[][WIDTH]);
 void draw_cell(const int array[][WIDTH],int color_num);
 int cell_mass(const int array[][WIDTH], int i, int j);
-void change_speed(int ch, int *speed, int *endgame, int *color_num,int *paused);
+void change_speed(int ch, int *speed, int *endgame, int *color_num,int *paused,int *randc);
 void change_mtr(int array[][WIDTH], int temp_array[][WIDTH]);
-
+void rand_color(int *color_num);
 void live_or_death(int array[][WIDTH], int temp_array[][WIDTH]);
 void read_stdin_cell_mass(int cell_mass[HEIGHT][WIDTH]);
 
@@ -31,6 +31,7 @@ int main() {
     int gameover = 1;
     int speed = 12;
     int paused = 0;
+    int randc = 0;
     read_stdin_cell_mass(array);
 
     if (init_ncurses()) {
@@ -39,8 +40,8 @@ int main() {
     clear();
     while (gameover == 1) {
         
-        int ch = getch();
-        change_speed(ch, &speed, &gameover,&color_num,&paused);
+        int ch = getch(); 
+        change_speed(ch, &speed, &gameover,&color_num,&paused,&randc);
 
         if(!paused) { 
             live_or_death(array, temp_array);
@@ -51,6 +52,12 @@ int main() {
             mvprintw(0, 5, "=== PAUSED === Press 's' to continue | Current color: %d", color_num);
         } else {
             mvprintw(0, 5, "=== RUNNING == Press 's' to pause    | Current color: %d", color_num);
+        }
+        if(randc) { 
+            mvprintw(3,85, "R");
+            rand_color(&color_num);
+        } else {
+            mvprintw(3, 85, " ");
         }
         mvprintw(1,5,"Arrows up,down --> Change color cell ");
         mvprintw(2,5,"Speed of simulation --> %i | a+ z-| Space - endgame\n", 21 - speed);
@@ -131,7 +138,7 @@ void draw_cell(const int array[][WIDTH],int color_num) {
         }
     }
 }
-void change_speed(int ch, int *speed, int *endgame, int *color_num,int *paused) {
+void change_speed(int ch, int *speed, int *endgame, int *color_num,int *paused,int *randc) {
     if(ch == KEY_UP && *color_num<8){
         (*color_num)++;
     }else if (ch == KEY_DOWN && *color_num > 2) {
@@ -140,6 +147,8 @@ void change_speed(int ch, int *speed, int *endgame, int *color_num,int *paused) 
         (*speed)--;
     } else if (ch == 'z' && *speed < 20) {
         (*speed)++;
+    }else if (ch =='r') {
+        *randc = !*randc;
     }else if (ch == 's') {
         *paused = !*paused; // переключаем паузу
         flushinp();
@@ -147,7 +156,14 @@ void change_speed(int ch, int *speed, int *endgame, int *color_num,int *paused) 
         *endgame = 0;
     }
 }
+void rand_color(int *color_num) {
+    if (*color_num < 8) {
+        (*color_num)++;
+    }else if (*color_num == 8){
+        *color_num = 2;
+    }
 
+}
 int init_ncurses(void) {
     if (freopen("/dev/tty", "r", stdin) == NULL) {
         printf("Ошибка чтения файла");
