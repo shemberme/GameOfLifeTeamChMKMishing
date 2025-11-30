@@ -150,6 +150,9 @@ void change_speed(int ch, int *speed, int *endgame, int *color_num,int *paused,i
     }else if (ch =='r') {
         *randc = !*randc;
     }else if (ch == 's') {
+        if (*randc == 1 ){
+            *randc = !*randc;
+        }
         *paused = !*paused; // переключаем паузу
         flushinp();
     }else if (ch == ' ') {
